@@ -47,7 +47,7 @@ public class Shop : MonoBehaviour
         //Fetch the Event System from the Scene
         m_EventSystem = GetComponent<EventSystem>();
 
-        UpdateInventoryCanvas();
+        SetupInventoryCanvas();
 
         BuyButton.onClick.AddListener(BuyButtonClick);
         SellButton.onClick.AddListener(SellButtonClick);
@@ -73,16 +73,21 @@ public class Shop : MonoBehaviour
             newItem.font = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
         }
     }
-
-    void UpdateInventoryCanvas()
+    
+    void SetupInventoryCanvas()
     {
+        SetShopItems(playerInventory, playerInventoryCanvas);
+        SetShopItems(sellerInventory, sellerInventoryCanvas);
+    }
+
+    void UpdateInventoryCanvas(Canvas inventoryCanvas)
+    {
+        selectedItem.transform.SetParent(inventoryCanvas.transform);
+        selectedItem.GetComponent<Text>().color = Color.black;
         selectedItem = null;
         itemTitle.text = "";
         itemDescription.text = "";
         itemPrice.text = "";
-
-        SetShopItems(playerInventory, playerInventoryCanvas);
-        SetShopItems(sellerInventory, sellerInventoryCanvas);
     }
 
     public void BuyButtonClick()
@@ -103,7 +108,8 @@ public class Shop : MonoBehaviour
         {
             playerInventory.BuyItem(selectedItem.item);
             sellerInventory.SellItem(selectedItem.item);
-            UpdateInventoryCanvas();
+            selectedItem.inventory = playerInventory;
+            UpdateInventoryCanvas(playerInventoryCanvas);
         }
     }
 
@@ -113,7 +119,8 @@ public class Shop : MonoBehaviour
         {
             playerInventory.SellItem(selectedItem.item);
             sellerInventory.BuyItem(selectedItem.item);
-            UpdateInventoryCanvas();
+            selectedItem.inventory = sellerInventory;
+            UpdateInventoryCanvas(sellerInventoryCanvas);
         }
     }
 
